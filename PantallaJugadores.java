@@ -12,6 +12,7 @@ public class PantallaJugadores extends JFrame {
     private BufferedImage backgroundImage;
 
     public PantallaJugadores(String nombreJugador) {
+
         setTitle("Jugadores Listos");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,7 +29,7 @@ public class PantallaJugadores extends JFrame {
 
         // Crear el panel principal
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(1, 4)); // 4 columnas
+        panel.setLayout(new GridLayout(1, 4));
 
         // Añadir los jugadores (incluyendo el que ingresó su nombre)
         agregarJugador(panel, nombreJugador, Color.RED);
@@ -66,6 +67,7 @@ public class PantallaJugadores extends JFrame {
         JPanel jugadorPanel = new JPanel();
         jugadorPanel.setLayout(new BorderLayout());
         jugadorPanel.setBackground(color);
+        
 
         JLabel nombreJugador = new JLabel(nombre, SwingConstants.CENTER);
         nombreJugador.setFont(new Font("Serif", Font.BOLD, 18));
