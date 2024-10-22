@@ -1,13 +1,30 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 
 public class PantallaJugadores extends JFrame {
+
+    private BufferedImage backgroundImage;
 
     public PantallaJugadores(String nombreJugador) {
         setTitle("Jugadores Listos");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        try {
+            backgroundImage = ImageIO.read(getClass().getResource("/Images/Fondo.jpg"));
+            float scaleFactor = 0.5f; // Ajustar el brillo del fondo (0.5f lo oscurece)
+            RescaleOp op = new RescaleOp(scaleFactor, 0, null);
+            backgroundImage = op.filter(backgroundImage, null); // Aplicar el efecto
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Crear el panel principal
         JPanel panel = new JPanel();
@@ -22,6 +39,22 @@ public class PantallaJugadores extends JFrame {
         // Botón Listo
         JButton botonListo = new JButton("Listo");
         add(botonListo, BorderLayout.SOUTH);
+
+        // Acción del botón "Listo" para abrir la próxima pantalla
+        botonListo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Ocultar la ventana actual
+                PantallaJugadores.this.dispose();
+
+                // Crear la nueva pantalla y mostrarla
+                SwingUtilities.invokeLater(() -> {
+                    PantallaMemoria pantallaMemoria = new PantallaMemoria();
+                    pantallaMemoria.setVisible(true);
+                    System.out.println("Pantalla de Memoria Abierta"); // Para verificar si se abre correctamente
+                });
+            }
+        });
 
         // Establecer el fondo
         panel.setBackground(new Color(34, 139, 34)); // Verde como el fondo de la imagen
@@ -52,3 +85,4 @@ public class PantallaJugadores extends JFrame {
         });
     }
 }
+
