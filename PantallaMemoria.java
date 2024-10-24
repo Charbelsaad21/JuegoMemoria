@@ -15,6 +15,9 @@ class PantallaMemoria extends JFrame {
     private BufferedImage nuevaImagenFondo; // Variable de instancia para la nueva imagen de fondo
     private JLabel temporizadorLabel;
     private int tiempoRestante; // Tiempo restante en segundos
+    private ArrayList<ImageIcon> imagenesMostradas; // Imágenes mostradas al usuario
+    private ArrayList<ImageIcon> imagenesSeleccionadas; // Imágenes seleccionadas por el usuario
+    private int puntos; // Puntos del usuario
 
     public PantallaMemoria() {
         setTitle("Juego de Memoria");
@@ -22,6 +25,9 @@ class PantallaMemoria extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         tiempoRestante = 2; // 2 segundos para la cuenta regresiva
+        imagenesMostradas = new ArrayList<>();
+        imagenesSeleccionadas = new ArrayList<>();
+        puntos = 0;
 
         try {
             // Cargar la imagen de fondo desde la ruta correcta y oscurecerla
@@ -89,7 +95,10 @@ class PantallaMemoria extends JFrame {
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
                     // Seleccionar una imagen aleatoria
-                    ImageIcon imagenFondo = imagenes.get(random.nextInt(imagenes.size()));
+                    int index = random.nextInt(imagenes.size());
+                    ImageIcon imagenFondo = imagenes.get(index);
+                    System.out.println(imagenFondo);
+                    imagenesMostradas.add(imagenFondo); // Guardar la imagen mostrada
                     // Dibujar la imagen
                     g.drawImage(imagenFondo.getImage(), 0, 0, getWidth(), getHeight(), this);
                 }
@@ -97,6 +106,7 @@ class PantallaMemoria extends JFrame {
             
             cuadro.setPreferredSize(new Dimension(100, 100)); 
             cuadro.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+            System.out.println(imagenesMostradas);
 
             panelCuadros.add(cuadro);
         }
@@ -143,17 +153,16 @@ class PantallaMemoria extends JFrame {
         timer.start(); // Iniciar el temporizador
     }
 
-    // Método para cambiar de pantalla
     private void cambiarPantalla() {
         // Cierra la ventana actual
         this.dispose();
-
-        // Crear la nueva ventana (puedes personalizar la nueva pantalla aquí)
+    
+        // Crear la nueva ventana
         JFrame nuevaPantalla = new JFrame("Nueva Pantalla");
         nuevaPantalla.setSize(800, 600);
         nuevaPantalla.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         nuevaPantalla.setLocationRelativeTo(null);
-
+    
         // Cargar y oscurecer la imagen de fondo para la nueva pantalla
         try {
             nuevaImagenFondo = ImageIO.read(getClass().getResource("/Images/Fondo.jpg"));
@@ -163,7 +172,7 @@ class PantallaMemoria extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+    
         // Crear el panel con fondo para la nueva pantalla
         JPanel panelConFondoNueva = new JPanel() {
             @Override
@@ -175,15 +184,154 @@ class PantallaMemoria extends JFrame {
             }
         };
         panelConFondoNueva.setLayout(new BorderLayout());
-
-        // Mensaje en la nueva pantalla
-        JLabel mensaje = new JLabel("¡Has cambiado de pantalla!", SwingConstants.CENTER);
-        mensaje.setFont(new Font("Arial", Font.BOLD, 36));
-        mensaje.setForeground(Color.WHITE);
-        panelConFondoNueva.add(mensaje, BorderLayout.CENTER);
-
+    
+        // Panel central con 5 cuadros grises para mover las imágenes seleccionadas
+        JPanel panelCentro = new JPanel();
+        panelCentro.setLayout(new GridLayout(1, 5, 10, 10)); // Igual que el layout del scroll
+        panelCentro.setOpaque(false); // Hacer el panel transparente
+        panelCentro.setPreferredSize(new Dimension(600, 100)); // Ajustar tamaño del contenedor para los cuadros
+    
+        ArrayList<JPanel> cuadrosCentro = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            JPanel cuadro = new JPanel();
+            cuadro.setPreferredSize(new Dimension(100, 100)); // Mismo tamaño de 100x100
+            cuadro.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+            cuadro.setBackground(Color.GRAY); // Fondo gris indicando que está vacío
+            cuadrosCentro.add(cuadro);
+            panelCentro.add(cuadro); // Añadir los cuadros grises al panel central
+        }
+    
+        // Centrar el panel central en la pantalla
+        JPanel panelCentroContainer = new JPanel(new GridBagLayout());
+        panelCentroContainer.setOpaque(false); // Hacerlo transparente
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(20, 0, 20, 0); // Espaciado superior e inferior
+        panelCentroContainer.add(panelCentro, gbc);
+    
+        panelConFondoNueva.add(panelCentroContainer, BorderLayout.CENTER);
+    
+        // Panel inferior con scroll para las imágenes pequeñas
+        JPanel panelImagenes = new JPanel();
+        panelImagenes.setLayout(new GridLayout(1, 0, 10, 10)); // Filas ajustables en scroll
+        panelImagenes.setOpaque(false); // Hacer que el panel sea transparente
+    
+        // Crear el JScrollPane con panel transparente
+        JScrollPane scrollPane = new JScrollPane(panelImagenes);
+        scrollPane.setPreferredSize(new Dimension(800, 150)); // Tamaño ajustado para scroll
+        scrollPane.setOpaque(false); // Hacer que el JScrollPane sea transparente
+        scrollPane.getViewport().setOpaque(false); // Hacer que el contenido del viewport sea transparente
+        scrollPane.setBorder(BorderFactory.createEmptyBorder()); // Eliminar el borde blanco del JScrollPane
+    
+        panelConFondoNueva.add(scrollPane, BorderLayout.SOUTH);
+    
+        // Ruta de las imágenes (esto es solo un ejemplo, cambia según sea necesario)
+        String rutaImagenes = "Images/";
+        String[] nombresImagenes = {
+            "imagen_ODS1.png", "imagen_ODS2.png", "imagen_ODS3.png", "imagen_ODS4.png",
+            "imagen_ODS5.png", "imagen_ODS6.png", "imagen_ODS7.png", "imagen_ODS8.png",
+            "imagen_ODS9.png", "imagen_ODS10.png", "imagen_ODS11.png", "imagen_ODS12.png",
+            "imagen_ODS13.png", "imagen_ODS14.png", "imagen_ODS15.png", "imagen_ODS16.png", "imagen_ODS17.png"
+        };
+    
+        ArrayList<ImageIcon> imagenes = new ArrayList<>();
+        for (String nombreImagen : nombresImagenes) {
+            ImageIcon icon = new ImageIcon(rutaImagenes + nombreImagen);
+    
+            // Redimensionar las imágenes a 100x100
+            Image image = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            ImageIcon imagenRedimensionada = new ImageIcon(image);
+    
+            imagenRedimensionada.setDescription(rutaImagenes + nombreImagen);
+            JButton botonImagen = new JButton(imagenRedimensionada);
+            botonImagen.setPreferredSize(new Dimension(100, 100)); // Botones del scroll con tamaño 100x100
+            botonImagen.setBorder(BorderFactory.createEmptyBorder()); // Eliminar bordes del botón
+            botonImagen.setContentAreaFilled(false); // Evitar que se llene el fondo del botón
+            botonImagen.setFocusPainted(false); // Quitar borde de foco al seleccionar
+    
+            botonImagen.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    moverImagenAlCentro(imagenRedimensionada, cuadrosCentro); // Mover imagen redimensionada
+                    if (imagenesSeleccionadas.size() < 5) { // Verificar que no se hayan seleccionado 5 imágenes
+                        imagenesSeleccionadas.add(imagenRedimensionada); // Guardar la imagen seleccionada
+                        System.out.println("Imagen seleccionada: " + imagenRedimensionada.getDescription()); // Imprimir la imagen seleccionada
+                        if (imagenesSeleccionadas.size() == 5) {
+                            calcularPuntos(); // Calcular puntos al seleccionar 5 imágenes
+                        }
+                    } else {
+                        System.out.println("Ya se han seleccionado 5 imágenes."); // Mensaje de error
+                    }
+                }
+            });
+            panelImagenes.add(botonImagen); // Añadir la imagen redimensionada al scroll
+        }
+    
         nuevaPantalla.add(panelConFondoNueva);
-        nuevaPantalla.setVisible(true); // Mostrar la nueva ventana
+        nuevaPantalla.setVisible(true);
+    }
+    
+    // Método para mover las imágenes al centro y escalarlas al tamaño del cuadro sin bordes
+    private void moverImagenAlCentro(ImageIcon imagen, ArrayList<JPanel> cuadrosCentro) {
+        for (JPanel cuadro : cuadrosCentro) {
+            if (cuadro.getBackground() == Color.GRAY) { // Espacio vacío encontrado
+                // Limpiar el contenido del panel (por si tiene algo anterior)
+                cuadro.removeAll();
+                
+                // Obtener las dimensiones del cuadro central
+                int anchoCuadro = cuadro.getWidth();
+                int altoCuadro = cuadro.getHeight();
+                
+                // Escalar la imagen para que se ajuste al tamaño del cuadro
+                Image imagenEscalada = imagen.getImage().getScaledInstance(anchoCuadro, altoCuadro, Image.SCALE_SMOOTH);
+                ImageIcon imagenRedimensionada = new ImageIcon(imagenEscalada);
+                
+                // Crear un JLabel con la imagen escalada
+                JLabel etiquetaImagen = new JLabel(imagenRedimensionada);
+                
+                // Establecer layout nulo para asegurarnos de que ocupa todo el espacio del panel
+                cuadro.setLayout(null);
+                etiquetaImagen.setBounds(0, 0, anchoCuadro, altoCuadro);  // Ajustar el tamaño del JLabel al tamaño del panel
+                
+                // Añadir la imagen al cuadro central
+                cuadro.add(etiquetaImagen);
+
+                // Refrescar el panel para que se muestre correctamente
+                cuadro.revalidate();
+                cuadro.repaint();
+
+                // Cambiar el fondo para indicar que está ocupado
+                cuadro.setBackground(Color.WHITE);
+                break;
+            }
+        }
+    }
+
+    private void calcularPuntos() {
+        for (int i = 0; i < imagenesMostradas.size() / 2; i++) {
+            ImageIcon temp = imagenesMostradas.get(i);
+            imagenesMostradas.set(i, imagenesMostradas.get(imagenesMostradas.size() - 1 - i));
+            imagenesMostradas.set(imagenesMostradas.size() - 1 - i, temp);
+        }
+        // Asegurarse de que se comparan las imágenes correctas
+        for (int i = 0; i < imagenesSeleccionadas.size(); i++) {
+            if (imagenesSeleccionadas.get(i) != null) { // Verificar que la imagen no sea null
+                System.out.println("Comparando: " + imagenesMostradas.get(i).getDescription() + " con " + imagenesSeleccionadas.get(i).getDescription()); // Imprimir comparación
+                if (i < imagenesMostradas.size() && imagenesMostradas.get(i).getDescription().equals(imagenesSeleccionadas.get(i).getDescription())) {
+                    puntos += 10; // 10 puntos por cada imagen correcta
+                }
+            } else {
+                System.out.println("La imagen seleccionada en la comparación es null."); // Mensaje de error
+            }
+        }
+        System.out.println("Puntos totales: " + puntos); // Imprimir puntos totales
+        mostrarPuntos(); // Mostrar los puntos al usuario
+    }
+
+    private void mostrarPuntos() {
+        JOptionPane.showMessageDialog(this, "Puntos: " + puntos);
+        System.exit(0); // Cerrar la aplicación después de mostrar los puntos
     }
 
     public static void main(String[] args) {
