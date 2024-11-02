@@ -13,44 +13,50 @@ public class PantallaJugadores extends JFrame {
 
     public PantallaJugadores(String nombreJugador) {
         setTitle("Jugadores Listos");
-        setSize(700, 400);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         try {
             backgroundImage = ImageIO.read(getClass().getResource("/Images/Fondo.jpg"));
-            float scaleFactor = 0.5f; // Ajustar el brillo del fondo (0.5f lo oscurece)
+            float scaleFactor = 0.5f;
             RescaleOp op = new RescaleOp(scaleFactor, 0, null);
-            backgroundImage = op.filter(backgroundImage, null); // Aplicar el efecto
+            backgroundImage = op.filter(backgroundImage, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Crear el panel principal con la imagen de fondo
         JPanel mainPanel = new BackgroundPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        // Panel con GridLayout
         JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayout(1, 4));
-        agregarJugador(panel1, nombreJugador, new Color(255, 0, 0, 128)); // Rojo semi-transparente
-        agregarJugador(panel1, "Luis", new Color(0, 255, 255, 128)); // Cian semi-transparente
-        agregarJugador(panel1, "Pedro", new Color(255, 165, 0, 128)); // Naranja semi-transparente
-        agregarJugador(panel1, "Jose", new Color(0, 255, 0, 128));
+        panel1.setLayout(new GridLayout(1, 4, 10, 0));
+        agregarJugador(panel1, nombreJugador, new Color(255, 0, 0, 180)); // Rojo más fuerte
+        agregarJugador(panel1, "", new Color(0, 255, 255, 180)); // Cian más fuerte
+        agregarJugador(panel1, "", new Color(255, 165, 0, 180)); // Naranja más fuerte
+        agregarJugador(panel1, "", new Color(0, 255, 0, 180)); // Verde más fuerte
+        panel1.setBorder(new EmptyBorder(80, 60, 80, 60));
 
-        // Añadir márgenes al panel con GridLayout
-        panel1.setBorder(new EmptyBorder(40, 60, 40, 60)); // Márgenes: arriba, izquierda, abajo, derecha
 
-        // Añadir el panel con GridLayout centrado dentro del mainPanel
         mainPanel.add(panel1, BorderLayout.CENTER);
         mainPanel.setOpaque(false);
 
-        // Botón Listo
+        // Contenedor del botón "Listo" en la parte inferior centrada
+        JPanel botonPanel = new JPanel();
+        botonPanel.setOpaque(false);  
+        botonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        botonPanel.setBorder(new EmptyBorder(0, 0, 20, 0)); // Ajuste para subir el botón ligeramente
+
         JButton botonListo = new JButton("Listo");
-        mainPanel.add(botonListo, BorderLayout.SOUTH);
+        botonListo.setFont(new Font("Arial", Font.BOLD, 16));
+        botonListo.setBackground(Color.LIGHT_GRAY);
+        botonListo.setForeground(Color.BLACK);
+        botonListo.setPreferredSize(new Dimension(100, 40)); 
+        botonPanel.add(botonListo);
+
+        mainPanel.add(botonPanel, BorderLayout.SOUTH);
         panel1.setOpaque(false);
 
-        // Acción del botón "Listo" para abrir la próxima pantalla
         botonListo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -58,12 +64,10 @@ public class PantallaJugadores extends JFrame {
                 SwingUtilities.invokeLater(() -> {
                     PantallaMemoria pantallaMemoria = new PantallaMemoria();
                     pantallaMemoria.setVisible(true);
-                    System.out.println("Pantalla de Memoria Abierta"); // Para verificar si se abre correctamente
                 });
             }
         });
 
-        // Añadir el panel principal al frame
         add(mainPanel, BorderLayout.CENTER);
     }
 
@@ -79,11 +83,16 @@ public class PantallaJugadores extends JFrame {
         jugadorPanel.setOpaque(false);
         jugadorPanel.setLayout(new BorderLayout());
         jugadorPanel.setBackground(color);
+        jugadorPanel.setPreferredSize(new Dimension(80, 60));
+        jugadorPanel.setBorder(new EmptyBorder(0, 5, 0, 5));
+
         JLabel nombreJugador = new JLabel(nombre, SwingConstants.CENTER);
         nombreJugador.setFont(new Font("Serif", Font.BOLD, 18));
         jugadorPanel.add(nombreJugador, BorderLayout.CENTER);
+
         JLabel estadoJugador = new JLabel("¡Listo!", SwingConstants.CENTER);
         jugadorPanel.add(estadoJugador, BorderLayout.SOUTH);
+        
         panel.add(jugadorPanel);
     }
 
@@ -99,10 +108,8 @@ public class PantallaJugadores extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            PantallaJugadores jugadores = new PantallaJugadores("Charbel");
+            PantallaJugadores jugadores = new PantallaJugadores("");
             jugadores.setVisible(true);
         });
     }
 }
-
-

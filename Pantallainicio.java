@@ -35,7 +35,7 @@ public class Pantallainicio extends JFrame {
 
         // Configuración de la ventana
         setTitle("Pantalla de Inicio");
-        setSize(600, 450);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
