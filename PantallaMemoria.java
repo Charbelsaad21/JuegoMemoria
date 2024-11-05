@@ -330,9 +330,22 @@ class PantallaMemoria extends JFrame {
     }
 
     private void mostrarPuntos() {
+        // Mostrar mensaje con el puntaje
         JOptionPane.showMessageDialog(this, "Puntos: " + puntos);
-        System.exit(0); // Cerrar la aplicación después de mostrar los puntos
+
+        String[] nombresJugadores = {"jose","Charbel","Luis","Samuel"};
+        int[] puntajes = {10,20,0,10};
+
+    
+        
+        // Crear y mostrar la pantalla de puntajes
+        PantallaPuntaje pantallaPuntaje = new PantallaPuntaje(nombresJugadores, puntajes); // Suponiendo que Puntaje recibe los puntos en el constructor
+        pantallaPuntaje.setVisible(true);
+        
+        // Cerrar la ventana actual
+        this.dispose();
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
